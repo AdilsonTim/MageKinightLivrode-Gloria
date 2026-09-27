@@ -1,0 +1,217 @@
+<!doctype html><html lang="pt-BR"><head>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#17140f">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Livro de Glória">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mage Knight — Livro de Glória</title>
+<style>
+:root{--gold:#d4ad58;--gold2:#f0d28a}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:radial-gradient(circle at 50% 0%,#3a3020 0,#17140f 30%,#090a0b 72%);color:#eee;font-family:Georgia,"Times New Roman",serif;padding:12px}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.10;background-image:repeating-linear-gradient(0deg,transparent 0 3px,#c49a55 4px,transparent 5px),repeating-linear-gradient(90deg,transparent 0 5px,#6d512c 6px,transparent 7px)}
+.app{max-width:680px;margin:auto;position:relative}
+.panel{background:linear-gradient(145deg,#17140f,#211c15 45%,#11100d);border:2px solid #5f4928;border-radius:17px;padding:18px;box-shadow:0 12px 35px #000d,inset 0 0 0 1px #a47b3b55}
+h1{text-align:center;color:var(--gold2);font-size:29px;letter-spacing:2px;text-shadow:0 2px 0 #000,0 0 12px #d4ad5844;margin:2px 0 4px}
+.sub{text-align:center;color:#c9b98f;font-family:Arial,sans-serif;letter-spacing:1.5px;margin:5px 0 20px}
+h2{color:var(--gold2);font-size:18px;letter-spacing:.8px;border-bottom:1px solid #765a32;padding:9px 10px;margin:20px 0 11px;background:linear-gradient(90deg,#2a2116,#17130e);border-radius:8px;box-shadow:inset 0 0 0 1px #4d3a22}
+label{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:9px 0;padding:4px 3px;font-family:Arial,sans-serif;font-size:15px;color:#e6dfd1}
+input,select{font:inherit;background:#0e0e0d;color:#f5f0e5;border:1px solid #75603f;border-radius:8px;padding:9px;width:145px;box-shadow:inset 0 2px 5px #0008}
+input:focus,select:focus{outline:1px solid var(--gold);box-shadow:0 0 0 2px #d4ad5833,inset 0 2px 5px #0008}
+input[type=checkbox]{width:21px;height:21px;accent-color:#b98b38}
+button{width:100%;padding:12px;margin-top:8px;border:1px solid #8d6a35;border-radius:9px;font:bold 16px Arial;background:linear-gradient(#b68a3c,#6f4d21);color:#fff3d0;text-shadow:0 1px #000;box-shadow:0 3px 0 #34230f,0 5px 12px #0008}
+button:active{transform:translateY(1px)}
+button.secondary{background:linear-gradient(#3b3934,#1e1d1a);border-color:#625947;color:#eee}
+.note{font:13px Arial,sans-serif;color:#b8b09f;line-height:1.5}
+.result{margin:20px 0;padding:17px;text-align:center;border:2px solid #73562d;border-radius:13px;background:radial-gradient(circle at 50% 35%,#3b3020,#12110e 72%);box-shadow:inset 0 0 22px #000b,0 5px 18px #0008}
+.score{font:bold 40px Arial;color:var(--gold2);text-shadow:0 2px 0 #000,0 0 16px #d4ad5855}
+.rank,.heroCard,.scenarioCard,.advancedLine,.statBox,.podiumBox{margin:7px 0;padding:10px;border:1px solid #665338;border-radius:9px;background:linear-gradient(135deg,#191713,#11110f);font-family:Arial,sans-serif;box-shadow:inset 0 0 0 1px #2d261c}
+.rank b,.heroCard b,.scenarioCard b,.advancedLine b,.statBox b,.podiumBox b{color:var(--gold2)}
+.statGrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}.statBox b{display:block;font-size:18px;margin-top:3px}
+.podium{text-align:center;padding:11px;margin-bottom:10px;border:1px solid #9a7437;border-radius:10px;background:linear-gradient(135deg,#3a2b17,#17130e);color:var(--gold2);box-shadow:0 4px 14px #0008}
+.hidden{display:none}
+canvas{border:1px solid #685333 !important;box-shadow:inset 0 0 18px #000b}
+
+.match-modal{position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.78);padding:18px;overflow:auto}
+.match-modal-box{max-width:620px;margin:7vh auto;background:linear-gradient(145deg,#211c15,#11100d);border:2px solid #806033;border-radius:15px;padding:18px;box-shadow:0 18px 55px #000e,inset 0 0 0 1px #c39b5540}
+.match-modal-title{text-align:center;color:#f0d28a;font:700 21px Georgia,serif;letter-spacing:1px;margin-bottom:14px}
+.match-detail-score{text-align:center;padding:12px;margin-bottom:12px;border:1px solid #8a6835;border-radius:10px;background:radial-gradient(circle,#3a2e1c,#11100d);color:#f0d28a}
+.match-detail-score strong{display:block;font:700 36px Arial,sans-serif}
+.match-detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.match-detail-item{padding:9px;border:1px solid #665338;border-radius:8px;background:#11110f;font:14px Arial,sans-serif;color:#e8e0d0}
+.match-detail-item b{display:block;color:#dcb96d;margin-bottom:3px}
+.match-detail-notes{margin-top:10px;padding:10px;border:1px solid #665338;border-radius:8px;background:#11110f;font:14px Arial,sans-serif;color:#d8d0c0;line-height:1.45}
+.match-detail-hint{font:12px Arial,sans-serif;color:#9f9788;margin-top:8px;text-align:center}
+@media(max-width:520px){.match-detail-grid{grid-template-columns:1fr}.match-modal{padding:10px}.match-modal-box{margin:3vh auto;padding:14px}}
+
+</style></head><body><div class="app"><div class="panel">
+<h1>⚔ MAGE KNIGHT ⚔</h1><div class="sub">LIVRO DE GLÓRIA • Calculadora de Pontuação</div>
+
+<h2>Calculadora</h2>
+<label>Cenário<select id="scenario"><option value="solo">Conquista Completa — Solo</option><option>Reconhecimento Inicial</option><option>Conquista-Relâmpago</option><option>Libertação das Minas</option><option>Cooperação Total</option><option>Cooperação-Relâmpago</option><option>Senhores do Calabouço</option><option>Noites Druídicas</option><option>Só Um Pode Retornar</option><option>A Relíquia Perdida</option><option>O Retorno de Volkare</option><option>A Jornada de Volkare</option><option>Vida e Morte</option><option>O Reino dos Mortos</option><option>O Vale Escondido</option><option>Conquiste e Resista</option><option>Outro / variante</select></label>
+<div id="scenarioNote" class="note"></div>
+
+<h2>Feitos Heroicos</h2>
+<label>Fama final<input id="fame" type="number"></label><label>Feitiços ×2<input id="spells" type="number"></label><label>Ações Avançadas ×1<input id="actions" type="number"></label><label>Artefatos ×2<input id="artifacts" type="number"></label><label>Pares de cristais ×1<input id="crystals" type="number"></label><label>Níveis de Unidades não feridas<input id="units" type="number"></label><label>Pontos de Unidades feridas<input id="woundedUnits" type="number"></label><label>Escudos Fort./Torre/Monastério ×2<input id="stronghold" type="number"></label><label>Escudos local de aventura ×2<input id="adventure" type="number"></label><label>Ferimentos no baralho −2<input id="wounds" type="number"></label>
+
+<div id="scenarioFields"></div>
+
+<h2>Registro</h2><label>Jogador<input id="player" type="text"></label>
+<label>Herói<select id="hero"><option value="">Selecione</option><option>Arythe</option><option>Goldyx</option><option>Norowas</option><option>Tovak</option><option>Wolfhawk</option><option>Krang</option><option>Braevalar</option></select></label>
+<label>Nome da partida<input id="game" type="text"></label>
+
+<h2>📜 Detalhes da Partida</h2>
+<label>Resultado<select id="result"><option value="">Não informado</option><option>Vitória</option><option>Derrota</option><option>Empate</option></select></label>
+<label>Cidades conquistadas<input id="matchCities" type="number"></label><label>Inimigos derrotados<input id="enemiesDefeated" type="number"></label><label>Ferimentos recebidos<input id="matchWounds" type="number"></label><label>Fama final registrada<input id="matchFame" type="number"></label><label>Rodadas utilizadas<input id="roundsUsed" type="number"></label><label>Cartas restantes do Fictício<input id="matchDummy" type="number"></label><label>Observações<input id="observations" type="text"></label>
+
+<div class="result"><div>PONTUAÇÃO</div><div id="total" class="score">0</div><div id="breakdown" class="note"></div></div>
+<button id="calc">⚔ CALCULAR PONTUAÇÃO</button><button class="secondary" id="newGame">🧹 NOVA PARTIDA</button><button id="save">🏆 SALVAR NO RANKING</button>
+
+<h2>🔎 Filtros</h2><label>Herói<select id="filterHero"><option value="">Todos os heróis</option><option>Arythe</option><option>Goldyx</option><option>Norowas</option><option>Tovak</option><option>Wolfhawk</option><option>Krang</option><option>Braevalar</option></select></label><label>Cenário<select id="filterScenario"><option value="">Todos</option></select></label><label>Jogador<select id="filterPlayer"><option value="">Todos</option></select></label><button class="secondary" id="showAll">🔄 MOSTRAR TUDO</button>
+
+<h2>📊 Estatísticas</h2><div id="stats" class="note">Nenhuma partida salva.</div><h2>📈 Desempenho</h2><div id="advanced" class="note"></div><canvas id="chart" width="600" height="220" style="width:100%;height:220px;background:#101519;border:1px solid #3d464d;border-radius:9px"></canvas>
+<h2>🥇 Pódio</h2><div id="podium" class="note"></div>
+<h2>🏆 Ranking Geral</h2><div id="ranking" class="note"></div>
+<h2>🧙 Ranking por Herói</h2><div id="heroRanking" class="note"></div>
+<h2>📜 Ranking por Cenário</h2><div id="scenarioRanking" class="note"></div>
+
+<button class="secondary" id="export">💾 EXPORTAR RANKING</button><button class="secondary" id="importBtn">📥 IMPORTAR RANKING</button><input id="importFile" type="file" accept=".json" style="display:none"><button class="secondary" id="clear">Apagar ranking</button>
+</div></div>
+
+
+<div id="matchModal" class="match-modal hidden" role="dialog" aria-modal="true">
+  <div class="match-modal-box">
+    <div class="match-modal-title">📜 FICHA DA PARTIDA</div>
+    <div id="matchModalContent"></div>
+    <button class="secondary" id="closeMatchModal">FECHAR</button>
+  </div>
+</div>
+
+<script>
+const $=id=>document.getElementById(id), num=id=>Number($(id)?.value||0), chk=id=>!!$(id)?.checked;
+const notes={solo:"Solo Conquest: +10 por cidade, +15 por todas, +30 por rodada não jogada, +1 por carta restante do Fictício e +5 pela última rodada.",default:"Use os Feitos Heroicos e, quando necessário, o bônus específico do cenário."};
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
+function getAll(){try{return JSON.parse(localStorage.getItem('mkRanking')||'[]')}catch(e){return[]}}
+function heroPoints(){return num('fame')+2*num('spells')+num('actions')+2*num('artifacts')+num('crystals')+num('units')+num('woundedUnits')+2*num('stronghold')+2*num('adventure')-2*num('wounds')}
+function renderScenario(){
+ const s=$('scenario').value;$('scenarioNote').textContent=s==="Conquista Completa — Solo"?notes.solo:notes.default;
+ let f='';
+ if(s==="Conquista Completa — Solo")f='<h2>Regras do cenário</h2><label>Cidades conquistadas ×10<input id="cities" type="number"></label><label>Todas as cidades?<input id="allCities" type="checkbox"></label><label>Rodadas não jogadas ×30<input id="early" type="number"></label><label>Cartas restantes do Fictício<input id="dummy" type="number"></label><label>Fim da rodada não anunciado?<input id="last" type="checkbox"></label>';
+ else if(s==="Conquista-Relâmpago")f='<h2>Regras do cenário</h2><label>Cidades lideradas ×7<input id="lead" type="number"></label><label>Cidades com seu escudo, sem liderança ×4<input id="contrib" type="number"></label>';
+ else if(s==="Libertação das Minas")f='<h2>Regras do cenário</h2><label>Minas em Campo ×4<input id="mineField" type="number"></label><label>Minas em Central ×7<input id="mineCore" type="number"></label>';
+ else if(s==="Conquiste e Resista")f='<h2>Regras do cenário</h2><label>Fortalezas ×3 VP<input id="keeps" type="number"></label><label>Torres ×2 VP<input id="towers" type="number"></label>';
+ else f='<h2>Regras do cenário</h2><label>Bônus específico<input id="special" type="number"></label>';
+ $('scenarioFields').innerHTML=f;calculate();
+}
+function calculate(){
+ const s=$('scenario').value;if(s==="Só Um Pode Retornar"){$('total').textContent="—";return null}
+ if(s==="Conquiste e Resista"){const v=3*num('keeps')+2*num('towers');$('total').textContent=v+" VP";return v}
+ let base=heroPoints(),extra=0;
+ if(s==="Conquista Completa — Solo")extra=10*num('cities')+(chk('allCities')?15:0)+30*num('early')+num('dummy')+(chk('last')?5:0);
+ else if(s==="Conquista-Relâmpago")extra=7*num('lead')+4*num('contrib');
+ else if(s==="Libertação das Minas")extra=4*num('mineField')+7*num('mineCore');
+ else if($( 'special'))extra=num('special');
+ $('total').textContent=base+extra;$('breakdown').textContent="Base: "+base+" • Específico: "+extra;return base+extra;
+}
+function filtered(){let a=getAll(),h=$('filterHero').value,s=$('filterScenario').value,p=$('filterPlayer').value;return a.filter(x=>(!h||x.hero===h)&&(!s||x.scenario===s)&&(!p||x.player===p)).sort((a,b)=>b.score-a.score)}
+
+
+function drawScoreChart(matches){
+  const c=$('chart'); if(!c)return;
+  const ctx=c.getContext('2d');
+  const w=c.width,h=c.height,pad=30;
+  ctx.clearRect(0,0,w,h);
+  if(!matches.length)return;
+  const vals=matches.slice().reverse().map(x=>Number(x.score)||0);
+  const max=Math.max(...vals,1);
+  ctx.strokeStyle='#5f543f';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(pad,h-pad);ctx.lineTo(w-pad,h-pad);ctx.stroke();
+  ctx.strokeStyle='#d4ad58';ctx.lineWidth=3;
+  ctx.beginPath();
+  vals.forEach((v,i)=>{
+    const x=vals.length===1?w/2:pad+(w-2*pad)*i/(vals.length-1);
+    const y=h-pad-(h-2*pad)*v/max;
+    if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+  });
+  ctx.stroke();
+  ctx.fillStyle='#f0d28a';
+  vals.forEach((v,i)=>{
+    const x=vals.length===1?w/2:pad+(w-2*pad)*i/(vals.length-1);
+    const y=h-pad-(h-2*pad)*v/max;
+    ctx.beginPath();ctx.arc(x,y,4,0,Math.PI*2);ctx.fill();
+  });
+  ctx.font='12px Arial';ctx.fillStyle='#aaa08d';
+  ctx.fillText('Evolução das pontuações',pad,16);
+}
+
+function showMatchDetails(index){
+  const matches = filtered();
+  const x = matches[index];
+  if(!x) return;
+
+  const value = (v, fallback="Não informado") =>
+    (v === undefined || v === null || v === "") ? fallback : esc(v);
+
+  $('matchModalContent').innerHTML =
+    '<div class="match-detail-score">PONTUAÇÃO FINAL<strong>'+value(x.score,"0")+'</strong></div>'+
+    '<div class="match-detail-grid">'+
+      '<div class="match-detail-item"><b>Resultado</b>'+value(x.result)+'</div>'+
+      '<div class="match-detail-item"><b>Herói</b>'+value(x.hero)+'</div>'+
+      '<div class="match-detail-item"><b>Jogador</b>'+value(x.player)+'</div>'+
+      '<div class="match-detail-item"><b>Cenário</b>'+value(x.scenario)+'</div>'+
+      '<div class="match-detail-item"><b>Cidades conquistadas</b>'+value(x.cities,"0")+'</div>'+
+      '<div class="match-detail-item"><b>Inimigos derrotados</b>'+value(x.enemies,"0")+'</div>'+
+      '<div class="match-detail-item"><b>Rodadas utilizadas</b>'+value(x.rounds,"0")+'</div>'+
+      '<div class="match-detail-item"><b>Cartas do Fictício</b>'+value(x.dummy,"0")+'</div>'+
+      '<div class="match-detail-item"><b>Data</b>'+value(x.date)+'</div>'+
+      '<div class="match-detail-item"><b>Nome da partida</b>'+value(x.game)+'</div>'+
+    '</div>'+
+    (x.observations ? '<div class="match-detail-notes"><b>📝 Observações</b><br>'+esc(x.observations)+'</div>' : '')+
+    '<div class="match-detail-hint">Os ferimentos e a fama permanecem apenas na calculadora, conforme a versão 8.1.</div>';
+
+  $('matchModal').classList.remove('hidden');
+}
+
+function closeMatchDetails(){
+  $('matchModal').classList.add('hidden');
+}
+
+function load(){
+ let all=getAll(),sc=[...new Set(all.map(x=>x.scenario).filter(Boolean))].sort(),pl=[...new Set(all.map(x=>x.player).filter(Boolean))].sort();
+ let os=$('filterScenario').value,op=$('filterPlayer').value;
+ $('filterScenario').innerHTML='<option value="">Todos</option>'+sc.map(x=>'<option>'+esc(x)+'</option>').join('');
+ $('filterPlayer').innerHTML='<option value="">Todos</option>'+pl.map(x=>'<option>'+esc(x)+'</option>').join('');
+ if(sc.includes(os))$('filterScenario').value=os;if(pl.includes(op))$('filterPlayer').value=op;
+ let a=filtered();if(!a.length){['stats','advanced','podium','ranking','heroRanking','scenarioRanking'].forEach(id=>$(id).innerHTML='Nenhuma partida encontrada.');const c=$('chart');if(c)c.getContext('2d').clearRect(0,0,c.width,c.height);return}
+ let scores=a.map(x=>+x.score||0),sum=scores.reduce((x,y)=>x+y,0),max=Math.max(...scores),min=Math.min(...scores);
+ let hc={},scn={};a.forEach(x=>{hc[x.hero||'Sem herói']=(hc[x.hero||'Sem herói']||0)+1;scn[x.scenario||'Sem cenário']=(scn[x.scenario||'Sem cenário']||0)+1});
+ let mh=Object.entries(hc).sort((a,b)=>b[1]-a[1])[0],ms=Object.entries(scn).sort((a,b)=>b[1]-a[1])[0];
+ $('stats').innerHTML='<div class="statGrid"><div class="statBox">Partidas<b>'+a.length+'</b></div><div class="statBox">Maior<b>'+max+'</b></div><div class="statBox">Menor<b>'+min+'</b></div><div class="statBox">Média<b>'+(sum/a.length).toFixed(1)+'</b></div><div class="statBox">Herói mais usado<b>'+esc(mh[0])+'</b>'+mh[1]+'</div><div class="statBox">Cenário mais jogado<b>'+esc(ms[0])+'</b>'+ms[1]+'</div></div>';
+ $('advanced').innerHTML='<div class="advancedLine">🔥 Melhor pontuação: <b>'+max+'</b></div>';
+drawScoreChart(a);
+ $('podium').innerHTML=a.slice(0,3).map((x,i)=>'<div class="podiumBox">'+['🥇','🥈','🥉'][i]+' <b>'+x.score+' pontos</b><br>'+esc(x.player||'Sem nome')+' • '+esc(x.hero||'Sem herói')+'</div>').join('');
+ $('ranking').innerHTML=a.map((x,i)=>'<div class="rank" style="cursor:pointer" onclick="showMatchDetails('+i+')"><b>#'+(i+1)+' — '+x.score+' pontos</b><br>'+esc(x.player||'Sem nome')+' • '+esc(x.hero||'Sem herói')+'<br><span class="note">'+esc(x.scenario)+' • '+esc(x.game||'Partida')+' • '+esc(x.date)+'</span><br><span class="note">📜 Toque para ver a ficha completa</span></div>').join('');
+ let bh={};a.forEach(x=>{if(!bh[x.hero]||x.score>bh[x.hero].score)bh[x.hero]=x});$('heroRanking').innerHTML=Object.entries(bh).sort((a,b)=>b[1].score-a[1].score).map((x,i)=>'<div class="heroCard">#'+(i+1)+' <b>'+esc(x[0])+'</b> — '+x[1].score+'</div>').join('');
+ let bs={};a.forEach(x=>{if(!bs[x.scenario])bs[x.scenario]={best:x,count:0};bs[x.scenario].count++;if(x.score>bs[x.scenario].best.score)bs[x.scenario].best=x});$('scenarioRanking').innerHTML=Object.entries(bs).sort((a,b)=>b[1].best.score-a[1].best.score).map((x,i)=>'<div class="scenarioCard">#'+(i+1)+' <b>'+esc(x[0])+'</b> — '+x[1].best.score+' pontos • '+x[1].count+' partida(s)</div>').join('');
+}
+$('scenario').addEventListener('change',renderScenario);$('calc').addEventListener('click',calculate);
+$('newGame').addEventListener('click',()=>{document.querySelectorAll('input').forEach(e=>{if(e.type==='checkbox')e.checked=false;else e.value=''});$('hero').value='';$('result').value='';$('scenario').value='solo';renderScenario();});
+$('save').addEventListener('click',()=>{let score=calculate();if(score===null)return;let a=getAll();a.push({score,player:$('player').value,hero:$('hero').value,game:$('game').value,scenario:$('scenario').selectedOptions[0].text,date:new Date().toLocaleDateString('pt-BR'),result:$('result').value,cities:num('matchCities'),enemies:num('enemiesDefeated'),wounds:num('matchWounds'),fame:num('matchFame'),rounds:num('roundsUsed'),dummy:num('matchDummy'),observations:$('observations').value});localStorage.setItem('mkRanking',JSON.stringify(a));load()});
+['filterHero','filterScenario','filterPlayer'].forEach(id=>$(id).addEventListener('change',load));
+$('closeMatchModal').addEventListener('click',closeMatchDetails);
+$('matchModal').addEventListener('click',e=>{if(e.target.id==='matchModal')closeMatchDetails()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMatchDetails()});$('showAll').addEventListener('click',()=>{$('filterHero').value='';$('filterScenario').value='';$('filterPlayer').value='';load()});
+$('clear').addEventListener('click',()=>{if(confirm('Apagar todo o ranking?')){localStorage.removeItem('mkRanking');load()}});
+$('export').addEventListener('click',()=>{let a=getAll();if(!a.length)return alert('Nenhuma partida salva.');let b=new Blob([JSON.stringify({app:'Mage Knight Livro de Glória',ranking:a},null,2)],{type:'application/json'}),u=URL.createObjectURL(b),x=document.createElement('a');x.href=u;x.download='Mage_Knight_Livro_de_Gloria.json';x.click();URL.revokeObjectURL(u)});
+$('importBtn').addEventListener('click',()=>$('importFile').click());$('importFile').addEventListener('change',e=>{let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{let d=JSON.parse(r.result),a=Array.isArray(d)?d:d.ranking;if(!Array.isArray(a))throw 0;localStorage.setItem('mkRanking',JSON.stringify(getAll().concat(a)));load();alert(a.length+' partida(s) importada(s).')}catch(z){alert('Arquivo inválido.')}};r.readAsText(f)});
+renderScenario();load();
+</script></div>
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", function () {
+    navigator.serviceWorker.register("./service-worker.js").catch(function(){});
+  });
+}
+</script>
+
+</body></html>
